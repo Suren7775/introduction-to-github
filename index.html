@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Отслеживание действий китов</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1b1b1b;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .coin {
+      border: 1px solid #444;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .signal {
+      font-weight: bold;
+    }
+    .long { color: #4caf50; }
+    .short { color: #f44336; }
+    .info {
+      font-size: 0.9em;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Реальное время: Сигналы китов</h1>
+  <div id="coins-container">
+    <!-- Секции для монет -->
+  </div>
+
+  <script>
+    // Список монет
+    const coins = ["BTC", "SOL", "ETH", "XRP", "BNB", "DOGE", "OP", "ARB", "TON"];
+
+    // Функция для генерации случайного сигнала
+    function generateSignal() {
+      const r = Math.random();
+      if (r < 0.45) {
+        return { type: "long", text: "ВОЗМОЖНЫЙ ЛОНГ" };
+      } else if (r < 0.9) {
+        return { type: "short", text: "ВОЗМОЖНЫЙ ШОРТ" };
+      } else {
+        return { type: "neutral", text: "Стабильно" };
+      }
+    }
+
+    // Функция для генерации случайных данных для монеты
+    function generateCoinData(coin) {
+      return {
+        price: (Math.random() * 50000 + 10000).toFixed(2),
+        fundingRate: (Math.random() * 0.1 - 0.05).toFixed(4),
+        openInterest: Math.floor(Math.random() * 10000 + 1000),
+        volume: Math.floor(Math.random() * 1000 + 100)
+      };
+    }
+
+    // Инициализация элементов для каждой монеты
+    function initCoins() {
+      const container = document.getElementById('coins-container');
+      container.innerHTML = "";
+      coins.forEach(coin => {
+        const coinDiv = document.createElement('div');
+        coinDiv.classList.add('coin');
+        coinDiv.setAttribute('id', `coin-${coin}`);
+        coinDiv.innerHTML = `
+          <h2>${coin}</h2>
+          <div>Цена: <span class="price">--</span>$</div>
+          <div>Funding Rate: <span class="fundingRate">--</span>%</div>
+          <div>Open Interest: <span class="openInterest">--</span></div>
+          <div>Объём: <span class="volume">--</span></div>
+          <div class="signal"><span class="signalText">--</span></div>
+        `;
+        container.appendChild(coinDiv);
+      });
+    }
+
+    // Функция обновления данных по всем монетам
+    function updateData() {
+      coins.forEach(coin => {
+        const data = generateCoinData(coin);
+        const signal = generateSignal();
+        const coinDiv = document.getElementById(`coin-${coin}`);
+        coinDiv.querySelector('.price').textContent = data.price;
+        coinDiv.querySelector('.fundingRate').textContent = data.fundingRate;
+        coinDiv.querySelector('.openInterest').textContent = data.openInterest;
+        coinDiv.querySelector('.volume').textContent = data.volume;
+        
+        const signalTextEl = coinDiv.querySelector('.signalText');
+        signalTextEl.textContent = signal.text;
+        // Очистка стилей и установка нового класса
+        signalTextEl.classList.remove('long', 'short');
+        if (signal.type === "long") {
+          signalTextEl.classList.add('long');
+        } else if (signal.type === "short") {
+          signalTextEl.classList.add('short');
+        }
+      });
+    }
+
+    // Инициализация
+    initCoins();
+    updateData();
+    // Обновление данных каждые 5 секунд (5000 мс)
+    setInterval(updateData, 5000);
+  </script>
+</body>
+</html>
